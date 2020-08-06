@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+
+<html>
+
+<!-- 页面头部 -->
+<head>
+
+<!-- 基本头部属性 -->
+<meta http-equiv="content-type" content="charset=utf-8" />
+<title>示例页面 - 溯游</title>
+<meta name="viewport" content="width=device-width, user-scalable=yes, minimum-scale=1.0, maximum-scale=2.5" />
+
+<!-- 基础样式表 -->
+<style type="text/css">
+:root {
+	--nav-height: 50px;
+	--nav-absorb: -51px;
+}
+
+body {
+	position: relative;
+	margin: 0;
+	background-color: #eee;
+}
+
+div#nav {
+	position: sticky;
+	top: var(--nav-absorb);
+	z-index: 10;
+	height: var(--nav-height);
+	
+	-webkit-user-select: none;
+	user-select: none;
+	
+	background-image: linear-gradient(#fff, #dde);
+	box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.2);
+	transition: top 0.3s;
+}
+div#nav:hover {
+	top: 0;
+}
+
+div#nav> * {
+	vertical-align: middle;
+}
+div#nav> button#nav-backward {
+	display: inline-block;
+	box-sizing: border-box;
+	outline: none;
+	min-width: 20px;
+	border: none;
+	padding: 0 2px;
+	
+	font-size: 32px;
+	line-height: inherit;
+	
+	background-color: transparent;
+	color: #999;
+	transition: color 0.3s;
+}
+div#nav> button#nav-backward:hover {
+	color: #666;
+}
+div#nav> button#nav-backward:active {
+	color: #555;
+}
+div#nav> h1#nav-title {
+	display: inline-block;
+	margin: 0 10px;
+	max-width: 70%;
+	overflow: hidden;
+	
+	font-size: 1.8em;
+	line-height: var(--nav-height);
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+div#nav> span#nav-dropper {
+	position: absolute;
+	top: var(--nav-height);
+	right: 20px;
+	display: inline-block;
+	border-radius: 0 0 2px 2px;
+	padding: 1px 5px;
+	
+	font-size: 16px;
+	line-height: 1.0;
+	
+	background-color: #dde;
+	color: #999;
+	box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.2);
+	transition: color 0.3s, opacity 0.3s;
+}
+div#nav:hover> span#nav-dropper {
+	color: #666;
+	opacity: 0.4;
+}
+
+div.frame div.entry {
+	box-sizing: border-box;
+	margin: 5px;
+	border: 1px solid #ccc;
+	padding: 10px;
+	/* overflow: hidden; */
+	text-align: left;
+	background-color: #fff;
+	box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.2);
+}
+
+div.frame ul.hierarchy {
+	padding: 0 2px 0 10px;
+	list-style-type: none;
+}
+ul.hierarchy> li {
+	position: relative;
+}
+ul.hierarchy> li:before {
+	position: absolute;
+	top: 10px;
+	left: -5px;
+	bottom: 0;
+	border-right: solid 1px #f9c;
+	content: '';
+}
+li> div.node {
+	position: relative;
+	top: 0;
+	margin: 10px 0 0 -10px;
+	padding: 0 0 0 10px;
+	background-image: linear-gradient(#ffe, #fff);
+	box-shadow: 0 2px 2px rgba(0, 0, 0, 0.2);
+}
+li> div.node.sticky {
+	position: sticky;
+	z-index: 1;
+}
+li> div.node:before {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 10px;
+	height: 100%;
+	content: '-';
+	font-size: 12px;
+	text-align: center;
+	background-color: #fec;
+}
+li> div.node.sticky:before {
+	content: '+';
+}
+div.node> div.content {
+	box-sizing: border-box;
+	max-height: 30vh;
+	padding: 5px;
+	overflow: auto;
+}
+
+div.frame p {
+	margin: 0.5em;
+}
+
+</style>
+<link rel="stylesheet" type="text/css" href="./font/icons.css" />
+
+<!-- JS方法简化脚本 -->
+<script id="js-ease" type="text/javascript" src="./jsease.js"></script>
+
+<!-- 页面头部结束 -->
+</head>
+
+<!-- 页面主体 -->
+<body>
+
+<!-- 导航栏 -->
+<div id="nav">
+	<button id="nav-backward" class="icon">&lt;</button><h1 id="nav-title">Title</h1>
+	<span id="nav-dropper" class="icon">ˇ</span>
+</div>
+
+<!-- 信息框容器 -->
+<div id="cover"></div>
+
+<!-- 左侧框架 -->
+<div id="frame-left" class="frame">
+	?
+</div>
+<!-- 主框架 -->
+<div id="frame-main" class="frame">
+	<div id="topic" class="entry">
+		<h2>This is a discussion.</h2>
+	</div>
+</div>
+
+<!-- 页脚栏 -->
+<div id="footer">
+	<p>溯游 Beta<br />Wilderness Ranger 设计</p>
+</div>
+
+<!-- 页面主体结束 -->
+</body>
+
+<!-- 页面服务脚本 -->
+<script id="js-service" type="text/javascript">
+function createHierarchy(nodes) {
+	var ele = document.createElement("ul");
+	ele.classList.add("hierarchy");
+	for(var i = 0; i < nodes.length; i++)
+		ele.appendChild(nodes[i]);
+	return ele;
+}
+function createEntry(node, hierarchy) {
+	var ele = document.createElement("li");
+	node.classList.add("node");
+	ele.appendChild(node);
+	ele.appendChild(document.createElement("div"));
+	ele.children[1].innerHTML = "Action";
+	if(hierarchy) {
+		node.classList.add("sticky");
+		hierarchy.classList.add("hierarchy");
+		ele.appendChild(hierarchy);
+	}
+	return ele;
+}
+
+function createNode(lns) {
+	var ele = document.createElement("div");
+	ele.classList.add("node");
+	ele.appendChild(document.createElement("div"));
+	ele.children[0].classList.add("user");
+	ele.children[0].innerHTML = "User";
+	ele.appendChild(document.createElement("div"));
+	ele.children[1].classList.add("content");
+	for(var i = 0; i < lns; i++) {
+		var para = document.createElement("p");
+		para.innerHTML = "Test sentence.";
+		ele.children[1].appendChild(para);
+	}
+	return ele;
+}
+
+document.getElementById("topic").appendChild(
+	createHierarchy([
+		createEntry(createNode(4), createHierarchy([
+			createEntry(createNode(2)),
+			createEntry(createNode(8), createHierarchy([
+				createEntry(createNode(6))
+			])),
+			createEntry(createNode(4))
+		])),
+		createEntry(createNode(2), createHierarchy([
+			createEntry(createNode(2), createHierarchy([
+				createEntry(createNode(1), createHierarchy([
+					createEntry(createNode(2))
+				])),
+			])),
+		])),
+		createEntry(createNode(4), createHierarchy([
+			createEntry(createNode(1))
+		]))
+	])
+);
+
+</script>
+
+</html>
