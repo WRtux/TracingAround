@@ -10,7 +10,6 @@
 .icon, [class^="icon-"]:before, [class*=" icon-"]:before {
 	
 	display: inline-block;
-	width: 1.0em;
 	
 	font-family: "Icons";
 	font-style: normal;
@@ -21,12 +20,13 @@
 	text-decoration: inherit;
 	text-align: center;
 	
-	-webkit-font-smoothing: antialiased;
+		-webkit-font-smoothing: antialiased;
 	text-shadow: 1px 1px 1px rgba(102, 102, 102, 0.2);
 	
 }
 [class^="icon-"]:before, [class*=" icon-"]:before {
 	margin-right: 2px;
+	width: 1.0em;
 }
 
 .icon-warning:before { content: '\21'; } /* '!' */
